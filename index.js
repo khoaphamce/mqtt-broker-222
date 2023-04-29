@@ -1,28 +1,41 @@
+const port = 1883
+const wsPort = 8883
+
 const aedes = require('aedes')();
+
 const server = require('net').createServer(aedes.handle);
+const httpServer = require('http').createServer()
+const ws = require('websocket-stream')
 const fs = require('fs');
 
-const port = 1883; // Replace with the port you want to use for the MQTT broker
+ws.createServer({ server: httpServer }, aedes.handle)
 
-server.listen(port, function () {
-  console.log(`MQTT broker listening on port ${port}`);
-});
+server.listen(port, function() {
+    console.log('Ades MQTT listening on port: ' + port)
+})
 
 aedes.on('client', function (client) {
-  console.log(`Client connected: ${client}`);
-  console.log(client);
+    console.log(`Client connected: ${client}`);
+    console.log(client);
 });
 
 aedes.on('clientDisconnect', function (client) {
-  console.log(`Client disconnected: ${client.id}`);
+    console.log(`Client disconnected: ${client.id}`);
 });
 
 aedes.on('publish', function (packet, client) {
-  console.log(`Received message on topic ${packet.topic}: ${packet.payload}`);
-  // Do whatever you want with the received message here
+    console.log(`Received message on topic ${packet.topic}`);
 
-  if (packet.topic == "ai4hw"){
-    console.log("Received image")
-    fs.writeFileSync('image.png', packet.payload)
-  }
+    if (packet.topic == "Image"){
+        console.log("Received image")
+        let base64Image = packet.payload
+        // let binaryData = new Buffer.from(base64Image, 'base64')
+        // console.log(binaryData)
+        fs.writeFileSync(`demo_image.txt`, base64Image)
+        console.log("Written image file")
+    }
+});
+
+httpServer.listen(wsPort, function () {
+    console.log('Aedes MQTT-WS listening on port: ' + wsPort)
 });
