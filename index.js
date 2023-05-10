@@ -26,13 +26,9 @@ aedes.on('clientDisconnect', function (client) {
 aedes.on('publish', function (packet, client) {
     console.log(`Received message on topic ${packet.topic}`);
 
-    if (packet.topic == "Image"){
-        console.log("Received image")
-        let base64Image = packet.payload
-        // let binaryData = new Buffer.from(base64Image, 'base64')
-        // console.log(binaryData)
-        fs.writeFileSync(`demo_image.txt`, base64Image)
-        console.log("Written image file")
+    if (packet.topic == "image"){
+        let id = packet.payload["id"]
+        console.log(`Received image with id: ${id}`)
     }
 });
 
