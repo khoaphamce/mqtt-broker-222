@@ -17,7 +17,7 @@ let activeDeviceList = new Set()
 
 client.on('connect', () => {
   console.log('Connected')
-  client.subscribe(["iot/active", "iot/deactive"])
+  client.subscribe(["iot/active", "iot/deactive", "iot/server"])
 //   client.publish(topic, 'nodejs mqtt test', { qos: 0, retain: false }, (error) => {
 //     if (error) {
 //       console.error(error)
@@ -42,6 +42,9 @@ client.on('message', (topic, payload) => {
   else if (topic == "iot/deactive"){
     activeDeviceList.delete(payloadString)
   }
+  // else if (topic == "iot/server"){
+  //   sleep(2000);
+  // }
 
   client.publish("active_device", JSON.stringify(Array.from(activeDeviceList)), { qos: 0, retain: false }, (error) => {
     if (error) {
